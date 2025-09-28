@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  reviews  Review[]
+  favorites UserFavorite[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Category {
+  id          String @id @default(cuid())
+  name        String @unique
+  slug        String @unique
+  icon        String
+  description String
+  color       String
+  toolCount   Int    @default(0)
+
+  tools Tool[]
+
+  @@map("categories")
+}
+
+model Tool {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String
+  longDescription String? @db.Text
+  website     String
+  logo        String?
+  pricing     String
+  status      ToolStatus @default(ACTIVE)
+  featured    Boolean  @default(false)
+  verified    Boolean  @default(false)
+  
+  // Metrics
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  popularity  Int      @default(0)
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  
+  features    ToolFeature[]
+  reviews     Review[]
+  favorites   UserFavorite[]
+  tags        ToolTag[]
+
+  @@map("tools")
+}
+
+model ToolFeature {
+  id     String @id @default(cuid())
+  name   String
+  toolId String
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@map("tool_features")
+}
+
+model ToolTag {
+  id     String @id @default(cuid())
+  name   String
+  toolId String
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@map("tool_tags")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  toolId    String
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+  @@map("reviews")
+}
+
+model UserFavorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  toolId    String
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+  @@map("user_favorites")
+}
+
+enum ToolStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
