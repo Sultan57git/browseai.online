@@ -29,7 +29,7 @@ export default function HomePage() {
                   <BarChart className="w-4 h-4" />
                   <span>Marketplace</span>
                 </a>
-                <a href="#" className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 font-medium bg-purple-50 px-3 py-2 rounded-lg">
+                <a href="/pro-features" className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 font-medium bg-purple-50 px-3 py-2 rounded-lg">
                   <Zap className="w-4 h-4" />
                   <span>Pro Features</span>
                 </a>
@@ -60,7 +60,7 @@ export default function HomePage() {
           
           {/* Pro Features Icons Row */}
           <div className="flex items-center justify-between mb-8 bg-gray-50 rounded-2xl p-6">
-            <div className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
+            <a href="/pro-features" className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
               <div className="flex items-center space-x-2">
                 <TestTube className="w-6 h-6 text-purple-600" />
                 <div className="w-4 h-4 bg-purple-100 rounded-full flex items-center justify-center">
@@ -68,39 +68,39 @@ export default function HomePage() {
                 </div>
               </div>
               <span className="text-gray-700 font-medium">Testing Sandbox</span>
-            </div>
+            </a>
             
-            <div className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
+            <a href="/pro-features" className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
               <div className="flex items-center space-x-2">
                 <Activity className="w-6 h-6 text-blue-600" />
                 <BarChart className="w-5 h-5 text-blue-600" />
               </div>
               <span className="text-gray-700 font-medium">Live Monitoring</span>
-            </div>
+            </a>
             
-            <div className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
+            <a href="/pro-features" className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
               <div className="flex items-center space-x-2">
                 <Target className="w-6 h-6 text-red-500" />
                 <div className="w-4 h-4 bg-red-500 rounded-full"></div>
               </div>
               <span className="text-gray-700 font-medium">Smart Stacking</span>
-            </div>
+            </a>
             
-            <div className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
+            <a href="/pro-features" className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
               <div className="flex items-center space-x-2">
                 <Users className="w-6 h-6 text-green-600" />
                 <Users className="w-5 h-5 text-green-600" />
               </div>
               <span className="text-gray-700 font-medium">Community Intel</span>
-            </div>
+            </a>
             
-            <div className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
+            <a href="/pro-features" className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
               <div className="flex items-center space-x-2">
                 <Building2 className="w-6 h-6 text-indigo-600" />
                 <BarChart className="w-5 h-5 text-indigo-600" />
               </div>
               <span className="text-gray-700 font-medium">Enterprise Suite</span>
-            </div>
+            </a>
           </div>
 
           {/* AI Tool Testing Sandbox Feature Banner */}
@@ -114,12 +114,12 @@ export default function HomePage() {
                 Test any AI tool live before you commit. Compare multiple tools side-by-side with your actual data.
               </p>
               <div className="flex space-x-4">
-                <button className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-colors shadow-lg">
+                <a href="/pro-features" className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-colors shadow-lg">
                   Start Free Test
-                </button>
-                <button className="border-2 border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors">
+                </a>
+                <a href="/pro-features" className="border-2 border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors">
                   View Demo
-                </button>
+                </a>
               </div>
             </div>
             
