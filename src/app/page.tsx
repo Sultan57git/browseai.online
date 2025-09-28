@@ -63,7 +63,7 @@ export default function HomePage() {
               </div>
               
               <nav className="hidden md:flex items-center space-x-6">
-                <a href="#" className="flex items-center space-x-2 text-blue-600 bg-blue-50 px-3 py-2 rounded-lg font-medium">
+                <a href="/browse" className="flex items-center space-x-2 text-blue-600 bg-blue-50 px-3 py-2 rounded-lg font-medium">
                   <Search className="w-4 h-4" />
                   <span>Browse Intelligence</span>
                 </a>
@@ -182,9 +182,10 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((category, index) => (
-              <div
+              
                 key={index}
-                className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group"
+                href="/browse"
+                className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group block"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="text-4xl mb-2">{category.icon}</div>
@@ -200,7 +201,7 @@ export default function HomePage() {
                   <span>Explore tools</span>
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -214,9 +215,12 @@ export default function HomePage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured Tools</h2>
               <p className="text-xl text-gray-600">Most popular and highest-rated AI tools</p>
             </div>
-            <button className="bg-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors">
+            <a 
+              href="/browse"
+              className="bg-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+            >
               View All Tools
-            </button>
+            </a>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -272,10 +276,10 @@ export default function HomePage() {
             <div>
               <h3 className="font-semibold mb-4">Browse</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">All Tools</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Categories</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Featured</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">New Tools</a></li>
+                <li><a href="/browse" className="hover:text-white transition-colors">All Tools</a></li>
+                <li><a href="/browse" className="hover:text-white transition-colors">Categories</a></li>
+                <li><a href="/browse" className="hover:text-white transition-colors">Featured</a></li>
+                <li><a href="/browse" className="hover:text-white transition-colors">New Tools</a></li>
               </ul>
             </div>
             
