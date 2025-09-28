@@ -6,50 +6,9 @@ import { Search, Star, Users, Zap, Crown, ArrowRight, TestTube, Activity, Target
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = [
-    { name: 'Content Creation', icon: '✍️', count: 245, description: 'AI writing, editing, and content tools' },
-    { name: 'Design & Media', icon: '🎨', count: 189, description: 'Image, video, and design generation' },
-    { name: 'Data & Analytics', icon: '📊', count: 167, description: 'Data analysis and visualization tools' },
-    { name: 'AI Agents', icon: '🤖', count: 134, description: 'Conversational AI and chatbots' },
-    { name: 'Business Tools', icon: '💼', count: 298, description: 'Productivity and business automation' },
-    { name: 'Development', icon: '⚡', count: 156, description: 'Code generation and dev tools' }
-  ];
-
-  const featuredTools = [
-    {
-      name: 'ChatGPT',
-      category: 'AI Agents',
-      rating: 4.8,
-      reviews: 15420,
-      price: 'Free - $20/mo',
-      description: 'Conversational AI for writing, analysis, and problem-solving',
-      logo: '🤖',
-      verified: true
-    },
-    {
-      name: 'Midjourney',
-      category: 'Design & Media',
-      rating: 4.7,
-      reviews: 8930,
-      price: '$10 - $60/mo',
-      description: 'High-quality AI image generation from text prompts',
-      logo: '🎨',
-      verified: true
-    },
-    {
-      name: 'Claude',
-      category: 'AI Agents',
-      rating: 4.9,
-      reviews: 7650,
-      price: 'Free - $20/mo',
-      description: 'Advanced AI assistant for analysis and coding',
-      logo: '🧠',
-      verified: true
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-white">
+      {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -90,6 +49,7 @@ export default function HomePage() {
         </div>
       </header>
 
+      {/* Pro Features Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center space-x-3 mb-4">
@@ -98,6 +58,7 @@ export default function HomePage() {
           </div>
           <p className="text-lg text-gray-600 mb-8">The advanced tools that make us the world's best AI directory</p>
           
+          {/* Pro Features Icons Row */}
           <div className="flex items-center justify-between mb-8 bg-gray-50 rounded-2xl p-6">
             <div className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
               <div className="flex items-center space-x-2">
@@ -142,6 +103,7 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* AI Tool Testing Sandbox Feature Banner */}
           <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 rounded-2xl p-8 text-white relative overflow-hidden">
             <div className="relative z-10">
               <div className="flex items-center space-x-4 mb-6">
@@ -161,12 +123,14 @@ export default function HomePage() {
               </div>
             </div>
             
+            {/* Background decoration */}
             <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full transform translate-x-32 -translate-y-32"></div>
             <div className="absolute right-12 bottom-0 w-32 h-32 bg-white/5 rounded-full transform translate-y-16"></div>
           </div>
         </div>
       </section>
 
+      {/* Categories Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -175,32 +139,112 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category, index) => (
-              
-                key={index}
-                href="/browse"
-                className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group block"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="text-4xl mb-2">{category.icon}</div>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                    {category.count} tools
-                  </span>
-                </div>
-                <h3 className="font-semibold text-xl mb-2 group-hover:text-purple-600 transition-colors">
-                  {category.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">{category.description}</p>
-                <div className="flex items-center text-purple-600 font-medium">
-                  <span>Explore tools</span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </a>
-            ))}
+            <a href="/browse" className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group block">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl mb-2">✍️</div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  245 tools
+                </span>
+              </div>
+              <h3 className="font-semibold text-xl mb-2 group-hover:text-purple-600 transition-colors">
+                Content Creation
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">AI writing, editing, and content tools</p>
+              <div className="flex items-center text-purple-600 font-medium">
+                <span>Explore tools</span>
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+
+            <a href="/browse" className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group block">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl mb-2">🎨</div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  189 tools
+                </span>
+              </div>
+              <h3 className="font-semibold text-xl mb-2 group-hover:text-purple-600 transition-colors">
+                Design & Media
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">Image, video, and design generation</p>
+              <div className="flex items-center text-purple-600 font-medium">
+                <span>Explore tools</span>
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+
+            <a href="/browse" className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group block">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl mb-2">📊</div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  167 tools
+                </span>
+              </div>
+              <h3 className="font-semibold text-xl mb-2 group-hover:text-purple-600 transition-colors">
+                Data & Analytics
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">Data analysis and visualization tools</p>
+              <div className="flex items-center text-purple-600 font-medium">
+                <span>Explore tools</span>
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+
+            <a href="/browse" className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group block">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl mb-2">🤖</div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  134 tools
+                </span>
+              </div>
+              <h3 className="font-semibold text-xl mb-2 group-hover:text-purple-600 transition-colors">
+                AI Agents
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">Conversational AI and chatbots</p>
+              <div className="flex items-center text-purple-600 font-medium">
+                <span>Explore tools</span>
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+
+            <a href="/browse" className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group block">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl mb-2">💼</div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  298 tools
+                </span>
+              </div>
+              <h3 className="font-semibold text-xl mb-2 group-hover:text-purple-600 transition-colors">
+                Business Tools
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">Productivity and business automation</p>
+              <div className="flex items-center text-purple-600 font-medium">
+                <span>Explore tools</span>
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+
+            <a href="/browse" className="bg-white rounded-xl p-6 border hover:shadow-lg transition-all cursor-pointer group block">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl mb-2">⚡</div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  156 tools
+                </span>
+              </div>
+              <h3 className="font-semibold text-xl mb-2 group-hover:text-purple-600 transition-colors">
+                Development
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">Code generation and dev tools</p>
+              <div className="flex items-center text-purple-600 font-medium">
+                <span>Explore tools</span>
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
           </div>
         </div>
       </section>
 
+      {/* Featured Tools */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-12">
@@ -208,48 +252,94 @@ export default function HomePage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured Tools</h2>
               <p className="text-xl text-gray-600">Most popular and highest-rated AI tools</p>
             </div>
-            <a 
-              href="/browse"
-              className="bg-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors"
-            >
+            <a href="/browse" className="bg-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors">
               View All Tools
             </a>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredTools.map((tool, index) => (
-              <div key={index} className="bg-white border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="text-3xl">{tool.logo}</div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-semibold text-lg">{tool.name}</h3>
-                        {tool.verified && (
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                        )}
-                      </div>
-                      <span className="text-sm text-gray-500">{tool.category}</span>
+            <div className="bg-white border rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="text-3xl">🤖</div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold text-lg">ChatGPT</h3>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium">{tool.rating}</span>
+                    <span className="text-sm text-gray-500">AI Agents</span>
                   </div>
                 </div>
-                
-                <p className="text-gray-600 text-sm mb-4">{tool.description}</p>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-green-600">{tool.price}</span>
-                  <span className="text-xs text-gray-500">{tool.reviews.toLocaleString()} reviews</span>
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-medium">4.8</span>
                 </div>
               </div>
-            ))}
+              
+              <p className="text-gray-600 text-sm mb-4">Conversational AI for writing, analysis, and problem-solving</p>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-green-600">Free - $20/mo</span>
+                <span className="text-xs text-gray-500">15,420 reviews</span>
+              </div>
+            </div>
+
+            <div className="bg-white border rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="text-3xl">🎨</div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold text-lg">Midjourney</h3>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    </div>
+                    <span className="text-sm text-gray-500">Design & Media</span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-medium">4.7</span>
+                </div>
+              </div>
+              
+              <p className="text-gray-600 text-sm mb-4">High-quality AI image generation from text prompts</p>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-green-600">$10 - $60/mo</span>
+                <span className="text-xs text-gray-500">8,930 reviews</span>
+              </div>
+            </div>
+
+            <div className="bg-white border rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="text-3xl">🧠</div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold text-lg">Claude</h3>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    </div>
+                    <span className="text-sm text-gray-500">AI Agents</span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-medium">4.9</span>
+                </div>
+              </div>
+              
+              <p className="text-gray-600 text-sm mb-4">Advanced AI assistant for analysis and coding</p>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-green-600">Free - $20/mo</span>
+                <span className="text-xs text-gray-500">7,650 reviews</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
