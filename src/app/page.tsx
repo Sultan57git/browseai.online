@@ -50,7 +50,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -91,7 +90,6 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Pro Features Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center space-x-3 mb-4">
@@ -100,7 +98,6 @@ export default function HomePage() {
           </div>
           <p className="text-lg text-gray-600 mb-8">The advanced tools that make us the world's best AI directory</p>
           
-          {/* Pro Features Icons Row */}
           <div className="flex items-center justify-between mb-8 bg-gray-50 rounded-2xl p-6">
             <div className="flex items-center space-x-3 text-center hover:bg-white rounded-xl p-4 transition-colors cursor-pointer">
               <div className="flex items-center space-x-2">
@@ -145,7 +142,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* AI Tool Testing Sandbox Feature Banner */}
           <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 rounded-2xl p-8 text-white relative overflow-hidden">
             <div className="relative z-10">
               <div className="flex items-center space-x-4 mb-6">
@@ -165,14 +161,12 @@ export default function HomePage() {
               </div>
             </div>
             
-            {/* Background decoration */}
             <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full transform translate-x-32 -translate-y-32"></div>
             <div className="absolute right-12 bottom-0 w-32 h-32 bg-white/5 rounded-full transform translate-y-16"></div>
           </div>
         </div>
       </section>
 
-      {/* Categories Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -207,7 +201,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Tools */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-12">
@@ -257,7 +250,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
