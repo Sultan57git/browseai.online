@@ -13,6 +13,13 @@ export default function ImportPage() {
     }
   }
 
+  const detectDelimiter = (text: string): string => {
+    const firstLine = text.split('\n')[0]
+    const commas = (firstLine.match(/,/g) || []).length
+    const tabs = (firstLine.match(/\t/g) || []).length
+    return tabs > commas ? '\t' : ','
+  }
+
   const handleImport = async () => {
     if (!file) return
     
@@ -21,20 +28,29 @@ export default function ImportPage() {
     
     try {
       const text = await file.text()
-      const lines = text.split('\n')
-      const headers = lines[0].split('\t')
+      const delimiter = detectDelimiter(text)
+      const lines = text.split('\n').filter(line => line.trim())
+      
+      if (lines.length < 2) {
+        setStatus('✗ Error: File is empty or has no data rows')
+        setLoading(false)
+        return
+      }
+      
+      const headers = lines[0].split(delimiter).map(h => h.trim())
+      
+      setStatus(`Found ${headers.length} columns: ${headers.join(', ')}`)
       
       const tools = lines.slice(1)
-        .filter(line => line.trim())
         .map(line => {
-          const values = line.split('\t')
+          const values = line.split(delimiter)
           const tool: any = {}
           headers.forEach((header, i) => {
-            tool[header.trim()] = values[i]?.trim() || ''
+            tool[header] = values[i]?.trim() || ''
           })
           return tool
         })
-        .filter(tool => tool.name)
+        .filter(tool => tool.name && tool.name.length > 0)
       
       setStatus(`Parsed ${tools.length} tools. Importing to database...`)
       
@@ -73,7 +89,7 @@ export default function ImportPage() {
               type="file"
               accept=".csv,.tsv,.txt"
               onChange={handleFileChange}
-              className="block w-full text-sm border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="block w-full text-sm border border-gray-300 rounded-lg p-3"
             />
             {file && (
               <p className="text-sm text-gray-500 mt-2">
@@ -85,32 +101,22 @@ export default function ImportPage() {
           <button
             onClick={handleImport}
             disabled={!file || loading}
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700"
           >
             {loading ? 'Importing...' : 'Import Tools to Database'}
           </button>
           
           {status && (
-            <div className={`p-4 rounded-lg ${
+            <div className={`p-4 rounded-lg whitespace-pre-wrap ${
               status.includes('✓') 
-                ? 'bg-green-50 text-green-800 border border-green-200' 
+                ? 'bg-green-50 text-green-800' 
                 : status.includes('✗') 
-                ? 'bg-red-50 text-red-800 border border-red-200' 
-                : 'bg-blue-50 text-blue-800 border border-blue-200'
+                ? 'bg-red-50 text-red-800' 
+                : 'bg-blue-50 text-blue-800'
             }`}>
-              <p className="font-medium">{status}</p>
+              {status}
             </div>
           )}
-        </div>
-        
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <h3 className="font-semibold mb-2">Instructions:</h3>
-          <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
-            <li>Prepare your CSV/TSV file with tool data</li>
-            <li>Click "Select File" and choose your file</li>
-            <li>Click "Import Tools to Database"</li>
-            <li>Wait for the import to complete</li>
-          </ol>
         </div>
       </div>
     </div>
