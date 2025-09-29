@@ -42,7 +42,7 @@ export default function ImportPage() {
       const tools = lines.slice(1)
         .map(line => {
           const values = line.split(delimiter)
-          const tool: any = {}
+          const tool: Record<string, string> = {}
           headers.forEach((header, i) => {
             tool[header] = values[i]?.trim() || ''
           })
@@ -50,26 +50,35 @@ export default function ImportPage() {
         })
         .filter(tool => tool.name && tool.name.length > 0)
       
-      setStatus(`Parsed ${tools.length} tools with columns: ${headers.join(', ')}\n\nImporting to database...`)
+      setStatus(`Parsed ${tools.length} tools. Importing to database...`)
       
-      console.log('Sending tools:', tools.length, 'First tool:', tools[0])
+      // Create a proper JSON payload
+      const payload = JSON.stringify({ tools: tools })
       
       const response = await fetch('/api/admin/import', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tools })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: payload
       })
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Server error: ${errorText}`)
+      }
       
       const result = await response.json()
       
       if (result.success) {
         setStatus(`✓ Success! Imported ${result.imported} tools`)
       } else {
-        setStatus(`✗ Error: ${result.error}`)
+        setStatus(`✗ Error: ${result.error || 'Unknown error'}`)
       }
     } catch (error: any) {
       setStatus(`✗ Error: ${error.message}`)
-      console.error('Import error:', error)
+      console.error('Full error:', error)
     }
     
     setLoading(false)
