@@ -39,8 +39,6 @@ export default function ImportPage() {
       
       const headers = lines[0].split(delimiter).map(h => h.trim())
       
-      setStatus(`Found ${headers.length} columns: ${headers.join(', ')}`)
-      
       const tools = lines.slice(1)
         .map(line => {
           const values = line.split(delimiter)
@@ -52,7 +50,9 @@ export default function ImportPage() {
         })
         .filter(tool => tool.name && tool.name.length > 0)
       
-      setStatus(`Parsed ${tools.length} tools. Importing to database...`)
+      setStatus(`Parsed ${tools.length} tools with columns: ${headers.join(', ')}\n\nImporting to database...`)
+      
+      console.log('Sending tools:', tools.length, 'First tool:', tools[0])
       
       const response = await fetch('/api/admin/import', {
         method: 'POST',
@@ -69,6 +69,7 @@ export default function ImportPage() {
       }
     } catch (error: any) {
       setStatus(`✗ Error: ${error.message}`)
+      console.error('Import error:', error)
     }
     
     setLoading(false)
