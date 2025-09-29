@@ -3,14 +3,12 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60 // Increase timeout
+export const maxDuration = 60
 
 export default async function ToolsPage() {
   try {
-    // Get total count
     const totalCount = await prisma.aiTool.count()
     
-    // Fetch only 50 tools at a time for faster loading
     const tools = await prisma.aiTool.findMany({
       take: 50,
       orderBy: [
@@ -38,6 +36,11 @@ export default async function ToolsPage() {
         category: { not: null },
         AND: {
           category: { notIn: ['', 'null'] }
+        }
+      },
+      orderBy: {
+        _count: {
+          category: 'desc'
         }
       },
       take: 15
