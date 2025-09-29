@@ -3,124 +3,160 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60 // Increase timeout
 
 export default async function ToolsPage() {
-  const tools = await prisma.aiTool.findMany({
-    take: 1000,
-    orderBy: [
-      { trending: 'desc' },
-      { reviewCount: 'desc' }
-    ]
-  })
+  try {
+    // Get total count
+    const totalCount = await prisma.aiTool.count()
+    
+    // Fetch only 50 tools at a time for faster loading
+    const tools = await prisma.aiTool.findMany({
+      take: 50,
+      orderBy: [
+        { trending: 'desc' },
+        { reviewCount: 'desc' }
+      ],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        category: true,
+        reviewCount: true,
+        logoUrl: true,
+        websiteUrl: true,
+        verified: true,
+        trending: true,
+        pricing: true
+      }
+    })
 
-  const categories = await prisma.aiTool.groupBy({
-    by: ['category'],
-    _count: true,
-    where: { category: { not: null } }
-  })
+    const categories = await prisma.aiTool.groupBy({
+      by: ['category'],
+      _count: true,
+      where: { 
+        category: { not: null },
+        AND: {
+          category: { notIn: ['', 'null'] }
+        }
+      },
+      take: 15
+    })
 
-  const serializedTools = tools.map(tool => ({
-    ...tool,
-    rating: tool.rating ? Number(tool.rating) : null,
-    createdAt: tool.createdAt.toISOString()
-  }))
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white shadow">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <h1 className="text-4xl font-bold text-gray-900">All AI Tools</h1>
+            <p className="text-gray-600 mt-2">Browse {totalCount} AI tools</p>
+          </div>
+        </header>
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-4xl font-bold text-gray-900">All AI Tools</h1>
-          <p className="text-gray-600 mt-2">Browse {serializedTools.length} AI tools</p>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          <button className="px-4 py-2 bg-purple-600 text-white rounded-full text-sm">
-            All Tools
-          </button>
-          {categories.slice(0, 10).map((cat) => (
-            <button
-              key={cat.category}
-              className="px-4 py-2 bg-white rounded-full text-sm border hover:bg-blue-50"
-            >
-              {cat.category?.substring(0, 30)} ({cat._count})
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            <button className="px-4 py-2 bg-purple-600 text-white rounded-full text-sm">
+              All Tools
             </button>
-          ))}
+            {categories
+              .filter(cat => cat.category && !cat.category.startsWith('http'))
+              .map((cat) => (
+                <button
+                  key={cat.category}
+                  className="px-4 py-2 bg-white rounded-full text-sm border hover:bg-blue-50 whitespace-nowrap"
+                >
+                  {cat.category.substring(0, 25)} ({cat._count})
+                </button>
+              ))}
+          </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {serializedTools.map(tool => (
-            <div key={tool.id} className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
-              <div className="flex items-start gap-4 mb-4">
-                {tool.logoUrl && !tool.logoUrl.includes('format') ? (
-                  <img 
-                    src={tool.logoUrl} 
-                    alt={tool.name}
-                    className="w-16 h-16 rounded object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.style.display = 'none'
-                    }}
-                  />
-                ) : (
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-blue-500 rounded flex items-center justify-center text-white font-bold text-xl">
-                    {tool.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-lg truncate">{tool.name}</h3>
-                    {tool.verified && <span className="text-green-600">✓</span>}
-                  </div>
-                  
-                  {tool.trending && (
-                    <span className="inline-block text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded mb-2">
-                      Trending
-                    </span>
+        <div className="max-w-7xl mx-auto px-4 pb-12">
+          <p className="text-sm text-gray-500 mb-4">Showing {tools.length} of {totalCount} tools</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tools.map(tool => (
+              <div key={tool.id} className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+                <div className="flex items-start gap-4 mb-4">
+                  {tool.logoUrl && !tool.logoUrl.includes('?auto=format') ? (
+                    <img 
+                      src={tool.logoUrl} 
+                      alt={tool.name}
+                      className="w-16 h-16 rounded object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                      }}
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-blue-500 rounded flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                      {tool.name.charAt(0).toUpperCase()}
+                    </div>
                   )}
-                  
-                  {tool.category && !tool.category.startsWith('http') && (
-                    <span className="text-xs text-gray-500 block truncate">
-                      {tool.category}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-lg truncate">{tool.name}</h3>
+                      {tool.verified && <span className="text-green-600 flex-shrink-0">✓</span>}
+                    </div>
+                    
+                    {tool.trending && (
+                      <span className="inline-block text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded mb-2">
+                        Trending
+                      </span>
+                    )}
+                    
+                    {tool.category && !tool.category.startsWith('http') && (
+                      <span className="text-xs text-gray-500 block truncate">
+                        {tool.category}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-600 line-clamp-3 mb-4">
+                  {tool.description && !tool.description.startsWith('http') 
+                    ? tool.description 
+                    : 'AI tool for productivity and automation'}
+                </p>
+                
+                <div className="flex items-center justify-between text-sm mb-3">
+                  <span className="text-gray-500">
+                    {tool.reviewCount?.toLocaleString() || 0} votes
+                  </span>
+                  {tool.pricing && !tool.pricing.startsWith('http') && (
+                    <span className="text-green-600 font-medium text-xs truncate max-w-[120px]">
+                      {tool.pricing}
                     </span>
                   )}
                 </div>
-              </div>
-              
-              <p className="text-sm text-gray-600 line-clamp-3 mb-4">
-                {tool.description && !tool.description.startsWith('http') 
-                  ? tool.description 
-                  : 'No description available'}
-              </p>
-              
-              <div className="flex items-center justify-between text-sm mb-3">
-                <span className="text-gray-500">
-                  {tool.reviewCount?.toLocaleString() || 0} votes
-                </span>
-                {tool.pricing && !tool.pricing.startsWith('http') && (
-                  <span className="text-green-600 font-medium text-xs truncate max-w-[120px]">
-                    {tool.pricing}
-                  </span>
+                
+                {tool.websiteUrl && tool.websiteUrl.startsWith('http') && (
+                  <a 
+                    href={tool.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-center bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition"
+                  >
+                    Visit Tool
+                  </a>
                 )}
               </div>
-              
-              {tool.websiteUrl && tool.websiteUrl.startsWith('http') && (
-                <a 
-                  href={tool.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-center bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition"
-                >
-                  Visit Tool
-                </a>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
+          
+          <div className="mt-8 text-center">
+            <p className="text-gray-600">Load more coming soon...</p>
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  } catch (error) {
+    console.error('Error loading tools:', error)
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Tools</h1>
+          <p className="text-gray-600">Please try refreshing the page</p>
+        </div>
+      </div>
+    )
+  }
 }
