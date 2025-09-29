@@ -113,7 +113,7 @@ export default function ProFeaturesPage() {
       status: 'running',
       progress: 0,
       prompt: 'Enter your test prompt...',
-      results: {}
+      results: {} as any
     };
     setSandboxTests([newTest, ...sandboxTests]);
   };
