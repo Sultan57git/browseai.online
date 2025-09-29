@@ -4,17 +4,19 @@ const prisma = new PrismaClient()
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
+export const revalidate = 0
 
 export default async function ToolsPage() {
+  let tools = []
+  let totalCount = 0
+  let error = null
+
   try {
-    const totalCount = await prisma.aiTool.count()
+    totalCount = await prisma.aiTool.count()
     
-    const tools = await prisma.aiTool.findMany({
-      take: 50,
-      orderBy: [
-        { trending: 'desc' },
-        { reviewCount: 'desc' }
-      ],
+    tools = await prisma.aiTool.findMany({
+      take: 30,
+      orderBy: { id: 'asc' },
       select: {
         id: true,
         name: true,
@@ -28,138 +30,67 @@ export default async function ToolsPage() {
         pricing: true
       }
     })
+  } catch (e: any) {
+    error = e.message
+    console.error('Database error:', e)
+  }
 
-    const categories = await prisma.aiTool.groupBy({
-      by: ['category'],
-      _count: true,
-      where: { 
-        category: { not: null },
-        AND: {
-          category: { notIn: ['', 'null'] }
-        }
-      },
-      orderBy: {
-        _count: {
-          category: 'desc'
-        }
-      },
-      take: 15
-    })
-
+  if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            <h1 className="text-4xl font-bold text-gray-900">All AI Tools</h1>
-            <p className="text-gray-600 mt-2">Browse {totalCount} AI tools</p>
-          </div>
-        </header>
-
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            <button className="px-4 py-2 bg-purple-600 text-white rounded-full text-sm">
-              All Tools
-            </button>
-            {categories
-              .filter(cat => cat.category && !cat.category.startsWith('http'))
-              .map((cat) => (
-                <button
-                  key={cat.category}
-                  className="px-4 py-2 bg-white rounded-full text-sm border hover:bg-blue-50 whitespace-nowrap"
-                >
-                  {cat.category.substring(0, 25)} ({cat._count})
-                </button>
-              ))}
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 pb-12">
-          <p className="text-sm text-gray-500 mb-4">Showing {tools.length} of {totalCount} tools</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tools.map(tool => (
-              <div key={tool.id} className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
-                <div className="flex items-start gap-4 mb-4">
-                  {tool.logoUrl && !tool.logoUrl.includes('?auto=format') ? (
-                    <img 
-                      src={tool.logoUrl} 
-                      alt={tool.name}
-                      className="w-16 h-16 rounded object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none'
-                      }}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-blue-500 rounded flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
-                      {tool.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg truncate">{tool.name}</h3>
-                      {tool.verified && <span className="text-green-600 flex-shrink-0">✓</span>}
-                    </div>
-                    
-                    {tool.trending && (
-                      <span className="inline-block text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded mb-2">
-                        Trending
-                      </span>
-                    )}
-                    
-                    {tool.category && !tool.category.startsWith('http') && (
-                      <span className="text-xs text-gray-500 block truncate">
-                        {tool.category}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                
-                <p className="text-sm text-gray-600 line-clamp-3 mb-4">
-                  {tool.description && !tool.description.startsWith('http') 
-                    ? tool.description 
-                    : 'AI tool for productivity and automation'}
-                </p>
-                
-                <div className="flex items-center justify-between text-sm mb-3">
-                  <span className="text-gray-500">
-                    {tool.reviewCount?.toLocaleString() || 0} votes
-                  </span>
-                  {tool.pricing && !tool.pricing.startsWith('http') && (
-                    <span className="text-green-600 font-medium text-xs truncate max-w-[120px]">
-                      {tool.pricing}
-                    </span>
-                  )}
-                </div>
-                
-                {tool.websiteUrl && tool.websiteUrl.startsWith('http') && (
-                  <a 
-                    href={tool.websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-center bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition"
-                  >
-                    Visit Tool
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-          
-          <div className="mt-8 text-center">
-            <p className="text-gray-600">Load more coming soon...</p>
-          </div>
-        </div>
-      </div>
-    )
-  } catch (error) {
-    console.error('Error loading tools:', error)
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Tools</h1>
-          <p className="text-gray-600">Please try refreshing the page</p>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-4xl mx-auto bg-red-50 border border-red-200 rounded-lg p-6">
+          <h1 className="text-2xl font-bold text-red-600 mb-2">Database Error</h1>
+          <p className="text-red-800">{error}</p>
+          <p className="text-sm text-gray-600 mt-4">Check Vercel logs for details</p>
         </div>
       </div>
     )
   }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <h1 className="text-4xl font-bold text-gray-900">All AI Tools</h1>
+          <p className="text-gray-600 mt-2">{totalCount} tools in database</p>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <p className="text-sm text-gray-500 mb-6">Showing {tools.length} tools</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tools.map(tool => (
+            <div key={tool.id} className="bg-white rounded-lg shadow p-6">
+              <div className="mb-4">
+                <h3 className="font-bold text-lg mb-2">{tool.name}</h3>
+                {tool.category && (
+                  <span className="text-xs text-gray-500">{tool.category}</span>
+                )}
+              </div>
+              
+              <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                {tool.description || 'No description'}
+              </p>
+              
+              <div className="text-sm text-gray-500">
+                {tool.reviewCount || 0} votes
+              </div>
+              
+              {tool.websiteUrl && tool.websiteUrl.startsWith('http') && (
+                <a 
+                  href={tool.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 block text-center bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+                >
+                  Visit
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
