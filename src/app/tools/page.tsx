@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import Link from 'next/link'
 
 const prisma = new PrismaClient()
 
@@ -63,30 +64,60 @@ export default async function ToolsPage() {
           {tools.map(tool => (
             <div key={tool.id} className="bg-white rounded-lg shadow p-6">
               <div className="mb-4">
-                <h3 className="font-bold text-lg mb-2">{tool.name}</h3>
-                {tool.category && (
-                  <span className="text-xs text-gray-500">{tool.category}</span>
+                {tool.logoUrl && !tool.logoUrl.includes('?auto=format') ? (
+                  <img 
+                    src={tool.logoUrl} 
+                    alt={tool.name}
+                    className="w-16 h-16 rounded mb-3 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                    }}
+                  />
+                ) : (
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-blue-500 rounded flex items-center justify-center text-white font-bold text-xl mb-3">
+                    {tool.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="font-bold text-lg">{tool.name}</h3>
+                  {tool.verified && <span className="text-green-600">✓</span>}
+                </div>
+                
+                {tool.trending && (
+                  <span className="inline-block text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded mb-2">
+                    Trending
+                  </span>
+                )}
+                
+                {tool.category && !tool.category.startsWith('http') && (
+                  <span className="text-xs text-gray-500 block">{tool.category}</span>
                 )}
               </div>
               
               <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                {tool.description || 'No description'}
+                {tool.description && !tool.description.startsWith('http') 
+                  ? tool.description 
+                  : 'AI tool for productivity and automation'}
               </p>
               
-              <div className="text-sm text-gray-500">
-                {tool.reviewCount || 0} votes
+              <div className="flex items-center justify-between text-sm mb-4">
+                <span className="text-gray-500">
+                  {tool.reviewCount?.toLocaleString() || 0} votes
+                </span>
+                {tool.pricing && !tool.pricing.startsWith('http') && (
+                  <span className="text-green-600 font-medium text-xs">
+                    {tool.pricing}
+                  </span>
+                )}
               </div>
               
-              {tool.websiteUrl && tool.websiteUrl.startsWith('http') && (
-                <a 
-                  href={tool.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 block text-center bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
-                >
-                  Visit
-                </a>
-              )}
+              <Link 
+                href={`/tools/${tool.id}`}
+                className="block text-center bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition"
+              >
+                View Details
+              </Link>
             </div>
           ))}
         </div>
