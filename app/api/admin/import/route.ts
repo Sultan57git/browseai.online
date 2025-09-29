@@ -1,71 +1,134 @@
-import { PrismaClient } from '@prisma/client'
-import { NextResponse } from 'next/server'
+'use client'
+import { useState } from 'react'
 
-const prisma = new PrismaClient()
+export default function ImportPage() {
+  const [file, setFile] = useState<File | null>(null)
+  const [status, setStatus] = useState('')
+  const [loading, setLoading] = useState(false)
 
-export async function POST(request: Request) {
-  try {
-    // Parse the request body properly
-    const body = await request.json()
-    const tools = body.tools
-    
-    console.log('Received tools count:', tools?.length)
-    
-    if (!tools || !Array.isArray(tools) || tools.length === 0) {
-      return NextResponse.json({ 
-        success: false,
-        error: `No valid tools data. Received: ${typeof tools}, Length: ${tools?.length || 0}` 
-      }, { status: 400 })
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setFile(e.target.files[0])
+      setStatus('')
     }
-    
-    const chunkSize = 100
-    let imported = 0
-    const errors: string[] = []
-    
-    for (let i = 0; i < tools.length; i += chunkSize) {
-      const chunk = tools.slice(i, i + chunkSize)
-      
-      try {
-        const validChunk = chunk
-          .filter((tool: any) => tool.name && tool.name.length > 0)
-          .map((tool: any) => ({
-            name: tool.name,
-            description: tool.description || null,
-            category: tool.categories || 'General',
-            rating: null,
-            reviewCount: tool.votes ? parseInt(tool.votes) || 0 : 0,
-            logoUrl: tool.thumbnail_url || null,
-            websiteUrl: tool.website_url || null,
-            verified: tool.is_featured === 'TRUE' || tool.is_featured === true,
-            trending: tool.trending_score ? parseInt(tool.trending_score) > 2000 : false,
-            pricing: tool.pricing_model || null,
-          }))
-        
-        if (validChunk.length > 0) {
-          await prisma.aiTool.createMany({
-            data: validChunk,
-            skipDuplicates: true
-          })
-          
-          imported += validChunk.length
-        }
-      } catch (err: any) {
-        errors.push(`Chunk ${i}-${i + chunkSize}: ${err.message}`)
-        console.error('Chunk error:', err)
-      }
-    }
-    
-    return NextResponse.json({ 
-      success: true, 
-      imported,
-      errors: errors.length > 0 ? errors : undefined,
-      message: `Successfully imported ${imported} tools`
-    })
-  } catch (error: any) {
-    console.error('Import error:', error)
-    return NextResponse.json({ 
-      success: false,
-      error: error.message 
-    }, { status: 500 })
   }
+
+  const detectDelimiter = (text: string): string => {
+    const firstLine = text.split('\n')[0]
+    const commas = (firstLine.match(/,/g) || []).length
+    const tabs = (firstLine.match(/\t/g) || []).length
+    return tabs > commas ? '\t' : ','
+  }
+
+  const handleImport = async () => {
+    if (!file) return
+    
+    setLoading(true)
+    setStatus('Reading file...')
+    
+    try {
+      const text = await file.text()
+      const delimiter = detectDelimiter(text)
+      const lines = text.split('\n').filter(line => line.trim())
+      
+      if (lines.length < 2) {
+        setStatus('✗ Error: File is empty or has no data rows')
+        setLoading(false)
+        return
+      }
+      
+      const headers = lines[0].split(delimiter).map(h => h.trim())
+      
+      const tools = lines.slice(1)
+        .map(line => {
+          const values = line.split(delimiter)
+          const tool: Record<string, string> = {}
+          headers.forEach((header, i) => {
+            tool[header] = values[i]?.trim() || ''
+          })
+          return tool
+        })
+        .filter(tool => tool.name && tool.name.length > 0)
+      
+      setStatus(`Parsed ${tools.length} tools. Importing to database...`)
+      
+      // Create a proper JSON payload
+      const payload = JSON.stringify({ tools: tools })
+      
+      const response = await fetch('/api/admin/import', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: payload
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Server error: ${errorText}`)
+      }
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setStatus(`✓ Success! Imported ${result.imported} tools`)
+      } else {
+        setStatus(`✗ Error: ${result.error || 'Unknown error'}`)
+      }
+    } catch (error: any) {
+      setStatus(`✗ Error: ${error.message}`)
+      console.error('Full error:', error)
+    }
+    
+    setLoading(false)
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-bold mb-2">Import AI Tools</h1>
+        <p className="text-gray-600 mb-6">Upload your CSV or TSV file to import tools into the database</p>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Select File (CSV/TSV)
+            </label>
+            <input
+              type="file"
+              accept=".csv,.tsv,.txt"
+              onChange={handleFileChange}
+              className="block w-full text-sm border border-gray-300 rounded-lg p-3"
+            />
+            {file && (
+              <p className="text-sm text-gray-500 mt-2">
+                Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
+              </p>
+            )}
+          </div>
+          
+          <button
+            onClick={handleImport}
+            disabled={!file || loading}
+            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700"
+          >
+            {loading ? 'Importing...' : 'Import Tools to Database'}
+          </button>
+          
+          {status && (
+            <div className={`p-4 rounded-lg whitespace-pre-wrap ${
+              status.includes('✓') 
+                ? 'bg-green-50 text-green-800' 
+                : status.includes('✗') 
+                ? 'bg-red-50 text-red-800' 
+                : 'bg-blue-50 text-blue-800'
+            }`}>
+              {status}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
